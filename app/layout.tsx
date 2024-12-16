@@ -1,6 +1,12 @@
 import { type Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
-
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,9 +21,21 @@ type Props = {
 
 const RootLayout = ({ children }: Props) => {
   return (
-    <html lang="ja" className={GeistSans.className}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="ja" className={GeistSans.className}>
+        <body>
+          <header className="p-4 flex justify-end">
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+          </header>
+          <main>{children}</main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 };
 
