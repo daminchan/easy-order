@@ -7,6 +7,8 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+
+import { jaJP } from "@clerk/localizations";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +23,7 @@ type Props = {
 
 const RootLayout = ({ children }: Props) => {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={jaJP}>
       <html lang="ja" className={GeistSans.className}>
         <body>
           <header className="p-4 flex justify-end">
