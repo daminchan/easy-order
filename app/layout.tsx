@@ -7,7 +7,6 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-
 import { jaJP } from "@clerk/localizations";
 import "./globals.css";
 
