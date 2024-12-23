@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 生徒情報
+model Student {
+  id        String   @id // ClerkのユーザーID
+  grade     Int      // 学年
+  className String   // クラス
+  name      String   // 氏名
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]  // 注文との関連
+  favorites StudentFavorite[] // お気に入り関連を追加
+}
+
+// 商品（お弁当）情報
+model Product {
+  id          String   @id @default(cuid())
+  name        String   // お弁当名
+  price       Int
+  description String?
+  imageUrl    String?
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+  favorites   StudentFavorite[] // お気に入り関連を追加
+
+  // 商品の並び順（管理用）
+  displayOrder Int     @default(0)
+}
+
+// 注文情報
+model Order {
+  id           String     @id @default(cuid())
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+  orderDate    DateTime   @default(now())
+  deliveryDate DateTime
+  status       String     // "active" or "cancelled"
+  isReceived   Boolean    @default(false)  // 受け取り状態を管理
+  totalAmount  Int
+  items        OrderItem[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([studentId])
+  @@index([deliveryDate])
+}
+
+// 注文詳細
+model OrderItem {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  price     Int     // 注文時の価格
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// 管理者情報
+model Admin {
+  id        String   @id // ClerkのユーザーIDと同じ値を使用
+  name      String   // 管理者名
+  role      String   @default("STAFF") // "STAFF" or "MANAGER"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([id])
+}
+
+// お気に入り情報
+model StudentFavorite {
+  id        String   @id @default(cuid())
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, productId]) // 同じ商品を重複してお気に入りにしない
+  @@index([studentId])
+  @@index([productId])
+}

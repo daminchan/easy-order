@@ -8,7 +8,11 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { jaJP } from "@clerk/localizations";
+import { Footer } from "@/components/ui/Footer";
+import { Providers } from "./providers";
+
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "EazyOrder",
@@ -24,16 +28,20 @@ const RootLayout = ({ children }: Props) => {
   return (
     <ClerkProvider localization={jaJP}>
       <html lang="ja" className={GeistSans.className}>
-        <body>
-          <header className="p-4 flex justify-end">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-          </header>
-          <main>{children}</main>
+        <body className="min-h-screen flex flex-col">
+          <Providers>
+            <header className="p-4 flex justify-end">
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </header>
+            <main className="flex-grow">{children}</main>
+            <Footer />
+            <Toaster />
+          </Providers>
         </body>
       </html>
     </ClerkProvider>

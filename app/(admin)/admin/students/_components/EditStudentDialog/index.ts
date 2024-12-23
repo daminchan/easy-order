@@ -1,0 +1,1 @@
+export { EditStudentDialog } from "./EditStudentDialog";
