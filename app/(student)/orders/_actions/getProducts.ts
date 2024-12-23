@@ -47,7 +47,7 @@ export const getProducts = async (): Promise<GetProductsResponse> => {
     );
 
     return { products };
-  } catch {
+  } catch (error) {
     return { error: "商品の取得に失敗しました" };
   }
 };

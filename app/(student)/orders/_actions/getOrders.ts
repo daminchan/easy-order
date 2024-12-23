@@ -61,7 +61,7 @@ export const getOrders = async (
     );
 
     return { orders };
-  } catch {
+  } catch (error) {
     return { error: "注文履歴の取得に失敗しました" };
   }
 };

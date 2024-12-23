@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { type AdminOrderGroup } from "@/lib/types/admin-order";
 import { startOfDay } from "date-fns";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 type GetOrdersResponse = {
   orders?: AdminOrderGroup[];
@@ -20,6 +21,8 @@ type GetOrdersResponse = {
 /** 管理者用の注文一覧を取得する */
 export const getOrders = async (): Promise<GetOrdersResponse> => {
   try {
+    console.log("注文一覧の取得を開始");
+
     // アクティブな注文を取得
     const orders = await db.order.findMany({
       where: {
@@ -34,9 +37,11 @@ export const getOrders = async (): Promise<GetOrdersResponse> => {
         },
       },
       orderBy: {
-        deliveryDate: "asc", // 日付順に変更
+        deliveryDate: "asc",
       },
     });
+
+    console.log("取得した注文数:", orders.length);
 
     // 配達日ごとの注文集計を作成
     const dailySummaryMap = orders.reduce((acc, order) => {
@@ -129,7 +134,23 @@ export const getOrders = async (): Promise<GetOrdersResponse> => {
       ),
     };
   } catch (error) {
-    console.error("注文一覧の取得エラー:", error);
+    console.log("エラーの型:", error?.constructor?.name);
+
+    if (error instanceof PrismaClientKnownRequestError) {
+      console.error("Prismaエラー:", {
+        code: error.code,
+        message: error.message,
+        meta: error.meta,
+      });
+      return { error: `データベースエラー: ${error.code}` };
+    }
+
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("注文一覧の取得エラー:", {
+      message,
+      error,
+    });
+
     return { error: "注文一覧の取得に失敗しました" };
   }
 };

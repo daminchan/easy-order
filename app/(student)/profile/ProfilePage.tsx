@@ -29,10 +29,10 @@ export const ProfilePage: FC = () => {
                 await createStudent();
                 toast({
                   title: "生徒情報を作成しました",
-                  description: "ページをリロードし���す",
+                  description: "ページをリロードします",
                 });
                 window.location.reload();
-              } catch {
+              } catch (error) {
                 toast({
                   title: "エラーが発生しました",
                   description: "生徒情報の作成に失敗しました",

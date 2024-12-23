@@ -9,6 +9,9 @@ import { auth } from "@clerk/nextjs/server";
 const Page: FC = async () => {
   const { userId } = await auth();
 
+  // デバッグ用：Clerkから取得したuserIdを確認
+  console.log("Debug - Clerk userId:", userId);
+
   if (!userId) return null;
 
   // 商品データの取得
@@ -22,6 +25,10 @@ const Page: FC = async () => {
 
   // 生徒データの取得
   const { student, error: studentError } = await getStudent(userId);
+  // デバッグ用：生徒データの取得結果を確認
+  console.log("Debug - Student data:", student);
+  console.log("Debug - Student error:", studentError);
+
   if (studentError) {
     return <div>生徒情報の取得に失敗しました</div>;
   }
