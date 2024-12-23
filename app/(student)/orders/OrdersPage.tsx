@@ -2,7 +2,7 @@
 import { type FC, useState } from "react";
 import { OrderForm } from "./_components/OrderForm";
 import { OrderHistory } from "./_components/OrderHistory";
-import { type ComponentProps } from "react";
+
 import { type Product } from "@/lib/types/product";
 import { type Student } from "@/lib/types/student";
 import { type Order, type OrderHistoryItem } from "@/lib/types/order";

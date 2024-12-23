@@ -1,6 +1,6 @@
 "use client";
 
-import { type FC, type ComponentProps } from "react";
+import { type FC } from "react";
 import { StudentTable } from "./_components/StudentTable";
 import { StudentForm } from "./_components/StudentForm";
 import { type Student } from "@/lib/types/student";

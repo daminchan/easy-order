@@ -4,7 +4,7 @@ import { type FC, useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { type Product } from "@/lib/types/product";
 import { type Order, type OrderFormInput } from "@/lib/types/order";
-import { OrderCart } from "./OrderCart";
+
 import { useToast } from "@/hooks/use-toast";
 import { getAvailableDeliveryDates } from "@/lib/utils/delivery-date";
 import { checkExistingOrder } from "../../_actions/checkExistingOrder";
@@ -28,7 +28,7 @@ type Props = {
 /** 1ページあたりの商品数（PC表示時） */
 const ITEMS_PER_PAGE = 3;
 
-/** 注文フォームコンポーネント */
+/** 注文フォームコンポ��ネント */
 export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
   const { toast } = useToast();
   const router = useRouter();
@@ -146,9 +146,9 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
       setQuantities({});
       setSelectedDeliveryDate(null);
       setExistingOrder(null);
-    } catch (error) {
+    } catch {
       toast({
-        title: "注文に失敗し��した",
+        title: "注文に失敗しました",
         description: "もう一度お試しください",
         variant: "destructive",
       });
@@ -160,8 +160,8 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
   /** お気に入り商品の取得 */
   useEffect(() => {
     const loadFavorites = async () => {
-      const { productIds, error } = await getFavorites(studentId);
-      if (!error && productIds) {
+      const { productIds } = await getFavorites(studentId);
+      if (productIds) {
         setFavoriteProductIds(productIds);
       }
     };

@@ -102,7 +102,7 @@ export const EditStudentDialog: FC<Props> = ({
                   title: "生徒情報を更新しました",
                 });
                 onOpenChange(false);
-              } catch (error) {
+              } catch {
                 toast({
                   title: "エラーが発生しました",
                   description: "生徒情報の更新に失敗しました",
