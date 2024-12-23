@@ -50,9 +50,9 @@ const Page: FC = async () => {
     }
 
     // 生徒データの取得
-    console.log("生徒データ取得開始 - ID:", userId);
+    console.log("=== 生徒情報取得開始 ===");
     const { student, error: studentError } = await getStudent(userId);
-    console.log("生徒データ取得結果:", {
+    console.log("生徒情報取得結果:", {
       success: !!student,
       error: studentError,
       studentData: student
@@ -62,8 +62,6 @@ const Page: FC = async () => {
             className: student.className,
             name: student.name,
             isActive: student.isActive,
-            createdAt: student.createdAt,
-            updatedAt: student.updatedAt,
           }
         : null,
     });
