@@ -13,11 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-/** StudentTableの型 */
-type StudentTableProps = ComponentProps<typeof StudentTable>;
-/** StudentFormの型 */
-type StudentFormProps = ComponentProps<typeof StudentForm>;
-
 type Props = {
   /** 生徒一覧データ */
   students: Student[];

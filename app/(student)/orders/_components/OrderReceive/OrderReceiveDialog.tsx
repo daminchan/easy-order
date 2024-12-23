@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 type OrderReceiveDialogProps = {
   /** 注文情報 */
@@ -53,7 +54,7 @@ export const OrderReceiveDialog: FC<OrderReceiveDialogProps> = ({
           </p>
         </div>
 
-        {/* 注文内容の確認 */}
+        {/* ��文内容の確認 */}
         <ScrollArea className="max-h-[300px] pr-4">
           <div className="space-y-4">
             {/* 注文日時 */}
@@ -70,10 +71,12 @@ export const OrderReceiveDialog: FC<OrderReceiveDialogProps> = ({
                 >
                   {detail.imageUrl && (
                     <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-md">
-                      <img
+                      <Image
                         src={detail.imageUrl}
                         alt={detail.productName}
-                        className="h-full w-full object-cover"
+                        fill
+                        sizes="48px"
+                        className="object-cover"
                       />
                     </div>
                   )}

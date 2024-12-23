@@ -127,7 +127,7 @@ export const StudentTable: FC<Props> = ({ students }) => {
                           toast({
                             title: "生徒情報を削除しました",
                           });
-                        } catch (error) {
+                        } catch {
                           toast({
                             title: "エラーが発生しました",
                             description: "生徒情報の削除に失敗しました",

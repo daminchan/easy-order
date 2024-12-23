@@ -34,8 +34,6 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
   const router = useRouter();
   /** 商品ごとの注文数 */
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  /** カートを表示するかどうか */
-  const [isCartOpen, setIsCartOpen] = useState(false);
   /** 選択された配達日 */
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState<Date | null>(
     null
@@ -95,24 +93,13 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
     return sortedProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [currentPage, sortedProducts]);
 
-  /** 配達日選���時の処理 */
+  /** 配達日選択時の処理 */
   const handleDeliveryDateChange = async (date: Date | null) => {
     setSelectedDeliveryDate(date);
     setExistingOrder(null);
 
     if (date) {
-      const { exists, order, error } = await checkExistingOrder(
-        studentId,
-        date
-      );
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "エラー",
-          description: error,
-        });
-        return;
-      }
+      const { exists, order } = await checkExistingOrder(studentId, date);
       if (exists && order) {
         setExistingOrder(order);
       }
@@ -161,7 +148,7 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
       setExistingOrder(null);
     } catch (error) {
       toast({
-        title: "注文に失敗しました",
+        title: "注文に失敗し��した",
         description: "もう一度お試しください",
         variant: "destructive",
       });

@@ -7,7 +7,7 @@ import { ja } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { DeleteOrderDialog } from "../DeleteOrderDialog";
@@ -16,8 +16,8 @@ import { FilterTabs } from "../FilterTabs";
 import { deleteOrder } from "../../_actions/deleteOrder";
 import { bulkDeleteOrders } from "../../_actions/bulkDeleteOrders";
 import { resetReceiveStatus } from "../../_actions/resetReceiveStatus";
-import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -191,7 +191,7 @@ export const OrderList: FC<Props> = ({ orderGroups = [] }) => {
         description: "注文を削除しました",
       });
       router.refresh();
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "削除エラー",
@@ -247,16 +247,6 @@ export const OrderList: FC<Props> = ({ orderGroups = [] }) => {
         ...prev,
         [groupKey]: currentPage + delta,
       };
-    });
-  };
-
-  /** カテゴリーを切り替え */
-  const changeCategory = (delta: number) => {
-    setCurrentCategoryIndex((prev) => {
-      const next = prev + delta;
-      if (next < 0) return filteredGroups.length - 1;
-      if (next >= filteredGroups.length) return 0;
-      return next;
     });
   };
 

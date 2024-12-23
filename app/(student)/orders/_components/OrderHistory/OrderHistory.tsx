@@ -1,7 +1,7 @@
 "use client";
 import { type FC } from "react";
 import { type OrderHistoryItem as OrderHistoryItemType } from "@/lib/types/order";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { OrderHistoryItem } from "./OrderHistoryItem";
 import { useOrderSort } from "./hooks/useOrderSort";
 import { addDays, setHours, setMinutes, isBefore } from "date-fns";

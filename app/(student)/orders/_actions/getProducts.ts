@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { type Product as PrismaProduct } from "@prisma/client";
+
 import { type Product } from "@/lib/types/product";
 
 type GetProductsResponse = {
@@ -47,7 +47,7 @@ export const getProducts = async (): Promise<GetProductsResponse> => {
     );
 
     return { products };
-  } catch (error) {
+  } catch {
     return { error: "商品の取得に失敗しました" };
   }
 };

@@ -51,7 +51,7 @@ export const StudentForm: FC = () => {
         title: "登録完了",
         description: "生徒情報を登録しました",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "エラー",
         description: "生徒情報の登録に失敗しました",

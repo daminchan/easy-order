@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { type Order as PrismaOrder } from "@prisma/client";
+
 import { type Order } from "@/lib/types/order";
 
 type GetOrdersResponse = {
@@ -61,7 +61,7 @@ export const getOrders = async (
     );
 
     return { orders };
-  } catch (error) {
+  } catch {
     return { error: "注文履歴の取得に失敗しました" };
   }
 };

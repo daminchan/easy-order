@@ -22,7 +22,7 @@ export const getStudent = async (
     }
 
     return { student };
-  } catch (error) {
+  } catch {
     return { error: "生徒情報の取得に失敗しました" };
   }
 };

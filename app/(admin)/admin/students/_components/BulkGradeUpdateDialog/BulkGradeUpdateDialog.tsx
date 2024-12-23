@@ -46,7 +46,7 @@ type BulkGradeUpdateDialogProps = {
 };
 
 /**
- * 学��一括更新モーダル
+ * 一��更新モーダル
  * @description 指定した学年の生徒を一括で別の学年に更新するフォームを提供します
  */
 export const BulkGradeUpdateDialog: FC<BulkGradeUpdateDialogProps> = ({
@@ -82,7 +82,7 @@ export const BulkGradeUpdateDialog: FC<BulkGradeUpdateDialogProps> = ({
                   description: `${fromGrade}年生を${toGrade}年生に更新しました`,
                 });
                 onOpenChange(false);
-              } catch (error) {
+              } catch {
                 toast({
                   title: "エラーが発生しました",
                   description: "学年の一括更新に失敗しました",

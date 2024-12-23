@@ -14,11 +14,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Package, History } from "lucide-react";
 
-/** OrderFormコンポーネントのProps型 */
-type OrderFormProps = ComponentProps<typeof OrderForm>;
-/** OrderHistoryコンポーネントのProps型 */
-type OrderHistoryProps = ComponentProps<typeof OrderHistory>;
-
 type Props = {
   /** 商品一覧 */
   products: Product[];
