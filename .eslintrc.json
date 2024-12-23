@@ -4,9 +4,9 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
-        "argsIgnorePattern": "^_|error",
-        "varsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_|error"
+        "argsIgnorePattern": "^_|^error$",
+        "varsIgnorePattern": "^_|^error$",
+        "caughtErrorsIgnorePattern": "^_|^error$"
       }
     ]
   }
