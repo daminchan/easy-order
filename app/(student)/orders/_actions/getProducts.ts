@@ -1,7 +1,19 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { type Product } from "@prisma/client";
+
+// コンポーネントで使用する型定義
+export type Product = {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  imageUrl?: string;
+  available: boolean;
+  displayOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 type GetProductsResponse = {
   products?: Product[];
@@ -11,22 +23,19 @@ type GetProductsResponse = {
 /** 商品データを取得する */
 export const getProducts = async (): Promise<GetProductsResponse> => {
   try {
-    console.log("=== 商品データ取得処理開始 ===");
+    console.log("=== 商品データ検索開始 ===");
 
-    // データベース接続情報の確認（パスワードは隠す）
-    const dbUrl = process.env.DATABASE_URL || "";
-    console.log("データベース接続情報:", {
-      url: dbUrl.replace(/:([^:@]+)@/, ":***@"),
-      host: dbUrl.match(/@([^:]+):/)?.[1] || "不明",
-      port: dbUrl.match(/:(\d+)\//)?.[1] || "不明",
-      database: dbUrl.match(/\/([^?]+)/)?.[1] || "不明",
-    });
-
-    console.log("商品データ取得クエリ実行");
-    const products = await db.product.findMany({
+    const prismaProducts = await db.product.findMany({
       where: { available: true },
       orderBy: { displayOrder: "asc" },
     });
+
+    // nullをundefinedに変換
+    const products: Product[] = prismaProducts.map((p) => ({
+      ...p,
+      description: p.description ?? undefined,
+      imageUrl: p.imageUrl ?? undefined,
+    }));
 
     console.log("商品データ取得結果:", {
       count: products.length,
@@ -42,13 +51,7 @@ export const getProducts = async (): Promise<GetProductsResponse> => {
     return { products };
   } catch (error) {
     console.error("商品データ取得エラー:", {
-      error,
       message: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-      connectionInfo: {
-        databaseUrl: process.env.DATABASE_URL ? "設定あり" : "未設定",
-        nodeEnv: process.env.NODE_ENV,
-      },
     });
     return { error: "商品の取得に失敗しました" };
   }
