@@ -14,6 +14,7 @@ import { getFavorites } from "../../_actions/getFavorites";
 import { OrderDeliverySection } from "./OrderDeliverySection";
 import { OrderProductList } from "./OrderProductList";
 import { OrderCartButton } from "./OrderCartButton";
+import { OrderConfirmDialog } from "../OrderConfirmDialog";
 
 /** 注文フォームProps */
 type Props = {
@@ -28,7 +29,7 @@ type Props = {
 /** 1ページあたりの商品数（PC表示時） */
 const ITEMS_PER_PAGE = 3;
 
-/** 注文フォームコンポ��ネント */
+/** 注文フォームコンポーネント */
 export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
   const { toast } = useToast();
   const router = useRouter();
@@ -52,6 +53,8 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
   const [favoriteProductIds, setFavoriteProductIds] = useState<string[]>([]);
   /** 注文作成中かどうか */
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  /** 注文確認ダイアログを表示するかどうか */
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   /** 配達可能日の取得 */
   const availableDeliveryDates = getAvailableDeliveryDates();
@@ -135,6 +138,20 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
     }));
     if (items.length === 0) return;
 
+    // 注文確認ダイアログを表示
+    setIsConfirmDialogOpen(true);
+  };
+
+  /** 注文を実際に確定する */
+  const handleConfirmOrder = async () => {
+    if (!selectedDeliveryDate) return;
+
+    const items = Object.entries(quantities).map(([productId, quantity]) => ({
+      productId,
+      quantity,
+    }));
+    if (items.length === 0) return;
+
     setIsCreatingOrder(true);
     try {
       await onSubmit({ deliveryDate: selectedDeliveryDate, items });
@@ -146,6 +163,7 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
       setQuantities({});
       setSelectedDeliveryDate(null);
       setExistingOrder(null);
+      setIsConfirmDialogOpen(false);
     } catch {
       toast({
         title: "注文に失敗しました",
@@ -242,6 +260,24 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
             isCreatingOrder={isCreatingOrder}
           />
         </>
+      )}
+
+      {/* 注文確認ダイアログ */}
+      {selectedDeliveryDate && (
+        <OrderConfirmDialog
+          open={isConfirmDialogOpen}
+          onClose={() => setIsConfirmDialogOpen(false)}
+          onConfirm={handleConfirmOrder}
+          deliveryDate={selectedDeliveryDate}
+          items={Object.entries(quantities).map(([productId, quantity]) => {
+            const product = products.find((p) => p.id === productId);
+            return {
+              name: product?.name ?? "",
+              price: product?.price ?? 0,
+              quantity,
+            };
+          })}
+        />
       )}
     </div>
   );
