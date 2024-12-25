@@ -24,8 +24,7 @@ export const getFavorites = async (
     return {
       productIds: favorites.map((f) => f.productId),
     };
-  } catch (error) {
-    console.error("Failed to get favorites:", error);
+  } catch {
     return {
       error: "お気に入りの取得に失敗しました",
     };

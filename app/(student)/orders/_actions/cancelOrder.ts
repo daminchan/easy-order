@@ -60,8 +60,7 @@ export const cancelOrder = async (
     revalidatePath("/orders");
 
     return { orderId: updatedOrder.id };
-  } catch (error) {
-    console.error("注文キャンセルエラー:", error);
+  } catch {
     return { error: "注文のキャンセルに失敗しました" };
   }
 };

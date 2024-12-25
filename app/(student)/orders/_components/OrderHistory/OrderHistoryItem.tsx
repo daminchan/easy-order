@@ -1,5 +1,5 @@
 "use client";
-import { type FC } from "react";
+import { type FC, useState } from "react";
 import { type OrderHistoryItem as OrderHistoryItemType } from "@/lib/types/order";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
@@ -29,14 +29,31 @@ export const OrderHistoryItem: FC<OrderHistoryItemProps> = ({
   onCancel,
   onReceive,
 }) => {
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [isOptimisticCancelled, setIsOptimisticCancelled] = useState(false);
+
+  // キャンセル処理のハンドラー
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    setIsOptimisticCancelled(true);
+    try {
+      await onCancel(order.id);
+    } catch (error) {
+      // エラーが発生した場合は楽観的UIを元に戻す
+      setIsOptimisticCancelled(false);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       className={cn(
-        "rounded-lg border p-4 space-y-4",
-        order.status === "cancelled"
+        "rounded-lg border p-4 space-y-4 relative",
+        order.status === "cancelled" || isOptimisticCancelled
           ? "bg-red-50 border-red-100"
           : order.isReceived
           ? "bg-gray-50 border-gray-100"
@@ -50,7 +67,10 @@ export const OrderHistoryItem: FC<OrderHistoryItemProps> = ({
             <span className="text-sm text-gray-500">
               {format(order.orderDate, "yyyy/MM/dd HH:mm", { locale: ja })}
             </span>
-            <OrderStatus status={order.status} isReceived={order.isReceived} />
+            <OrderStatus
+              status={isOptimisticCancelled ? "cancelled" : order.status}
+              isReceived={order.isReceived}
+            />
           </div>
           <p className="font-medium text-gray-900">
             {format(order.deliveryDate, "M月d日(E)", { locale: ja })}の注文
@@ -71,7 +91,7 @@ export const OrderHistoryItem: FC<OrderHistoryItemProps> = ({
             key={detail.id}
             className={cn(
               "flex items-center gap-3 rounded-md p-3 bg-white border",
-              order.status === "cancelled"
+              order.status === "cancelled" || isOptimisticCancelled
                 ? "border-red-100"
                 : order.isReceived
                 ? "border-gray-100"
@@ -108,29 +128,39 @@ export const OrderHistoryItem: FC<OrderHistoryItemProps> = ({
       </div>
 
       {/* アクション */}
-      {order.status === "active" && !order.isReceived && (
-        <div className="flex justify-end gap-2 pt-2">
-          {!deadlinePassed && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onCancel(order.id)}
-              className="text-red-600 border-red-200 hover:bg-red-50"
-            >
-              キャンセル
-            </Button>
-          )}
-          <OrderReceiveDialog order={order} onReceive={onReceive}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-green-600 border-green-200 hover:bg-green-50"
-            >
-              受け取り確認
-            </Button>
-          </OrderReceiveDialog>
-        </div>
-      )}
+      {order.status === "active" &&
+        !order.isReceived &&
+        !isOptimisticCancelled && (
+          <div className="flex justify-end gap-2 pt-2">
+            {!deadlinePassed && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+                disabled={isCancelling}
+                className="text-red-600 border-red-200 hover:bg-red-50 min-w-[80px]"
+              >
+                {isCancelling ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                    <span>キャンセル中...</span>
+                  </div>
+                ) : (
+                  "キャンセル"
+                )}
+              </Button>
+            )}
+            <OrderReceiveDialog order={order} onReceive={onReceive}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-green-600 border-green-200 hover:bg-green-50"
+              >
+                受け取り確認
+              </Button>
+            </OrderReceiveDialog>
+          </div>
+        )}
     </motion.div>
   );
 };

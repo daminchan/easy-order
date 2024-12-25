@@ -2,7 +2,7 @@
 
 import { type FC } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart, Info } from "lucide-react";
 import { type Product } from "@/lib/types/product";

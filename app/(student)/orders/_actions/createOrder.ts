@@ -37,7 +37,7 @@ export const createOrder = async (
       return { error: "注文締切時間を過ぎています" };
     }
 
-    // 同じ配達日の注文が存在するかチェック
+    // 同じ配��日の注文が存在するかチェック
     const existingOrder = await db.order.findFirst({
       where: {
         studentId,
@@ -74,7 +74,7 @@ export const createOrder = async (
       0
     );
 
-    // ���ランザクションで注文を作成
+    // トランザクションで注文を作成
     const { id: orderId } = await db.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {
@@ -102,8 +102,7 @@ export const createOrder = async (
     revalidatePath("/orders");
 
     return { orderId };
-  } catch (error) {
-    console.error("注文作成エラー:", error);
+  } catch {
     return { error: "注文の作成に失敗しました" };
   }
 };
