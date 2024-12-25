@@ -69,25 +69,28 @@ export const OrderProductCard: FC<Props> = ({
         }}
         className="absolute top-2 right-2 p-2 rounded-full bg-white/80 hover:bg-white shadow-sm"
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={isFavorite ? "favorite" : "notFavorite"}
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.8 }}
-            transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 17,
-            }}
-          >
-            <Heart
-              className={`h-5 w-5 ${
-                isFavorite ? "fill-red-500 text-red-500" : "text-gray-500"
-              }`}
-            />
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          animate={{
+            scale: [1.2, 1, 1.2, 1],
+            color: isFavorite ? "rgb(239, 68, 68)" : "rgb(107, 114, 128)",
+          }}
+          initial={false}
+          transition={{
+            scale: {
+              times: [0, 0.3, 0.6, 1],
+              duration: 0.6,
+            },
+            color: {
+              duration: 0.2,
+            },
+          }}
+        >
+          <Heart
+            className={`h-5 w-5 transition-colors ${
+              isFavorite ? "fill-red-500 text-red-500" : "text-gray-500"
+            }`}
+          />
+        </motion.div>
       </button>
     </div>
 

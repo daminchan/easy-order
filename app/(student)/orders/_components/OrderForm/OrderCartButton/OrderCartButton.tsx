@@ -43,21 +43,27 @@ export const OrderCartButton: FC<Props> = ({
     Object.values(quantities).some((quantity) => quantity > 0);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 md:static md:bg-transparent md:border-0 md:shadow-none md:p-0">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 md:sticky md:mt-4 md:rounded-lg md:border md:shadow-sm">
       <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm text-gray-600">合計金額</p>
-          <p className="text-2xl font-bold text-gray-900">
+        <div className="flex-1">
+          <p className="text-sm text-gray-500">合計金額</p>
+          <p className="text-xl font-bold text-gray-900">
             {totalAmount.toLocaleString()}円
           </p>
         </div>
         <Button
           onClick={onCreateOrder}
-          disabled={!canOrder}
-          className="flex-1 md:flex-initial"
+          disabled={totalAmount === 0 || isCreatingOrder}
+          className="bg-green-600 hover:bg-green-700 max-w-[200px]"
         >
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          注文する
+          {isCreatingOrder ? (
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span>注文中...</span>
+            </div>
+          ) : (
+            "注文する"
+          )}
         </Button>
       </div>
     </div>

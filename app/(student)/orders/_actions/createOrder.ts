@@ -74,7 +74,7 @@ export const createOrder = async (
       0
     );
 
-    // トランザクションで注文を作成
+    // ���ランザクションで注文を作成
     const { id: orderId } = await db.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {

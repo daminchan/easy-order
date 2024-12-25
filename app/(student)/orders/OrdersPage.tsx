@@ -1,7 +1,8 @@
 "use client";
-import { type FC, useState } from "react";
+import { type FC, useState, useEffect } from "react";
 import { OrderForm } from "./_components/OrderForm";
 import { OrderHistory } from "./_components/OrderHistory";
+import { OrderHistorySkeleton } from "./_components/OrderHistory/OrderHistorySkeleton";
 
 import { type Product } from "@/lib/types/product";
 import { type Student } from "@/lib/types/student";
@@ -34,6 +35,12 @@ export const OrdersPage: FC<Props> = ({ products, student, orders }) => {
   const router = useRouter();
   const { toast } = useToast();
   const [showOrderForm, setShowOrderForm] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // ordersが更新されたらローディングを解除
+  useEffect(() => {
+    setIsLoading(false);
+  }, [orders]);
 
   /** 注文履歴の表示用データに変換 */
   const orderHistoryItems: OrderHistoryItem[] = orders.map((order) => ({
@@ -54,38 +61,48 @@ export const OrdersPage: FC<Props> = ({ products, student, orders }) => {
 
   /** 注文をキャンセルする */
   const handleCancel = async (orderId: string) => {
-    const { error } = await cancelOrder(orderId, student.id);
-    if (error) {
+    setIsLoading(true);
+    try {
+      const { error } = await cancelOrder(orderId, student.id);
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "キャンセルエラー",
+          description: error,
+        });
+        return;
+      }
       toast({
-        variant: "destructive",
-        title: "キャンセルエラー",
-        description: error,
+        title: "キャンセル完了",
+        description: "注文をキャンセルしました",
       });
-      return;
+      router.refresh();
+    } finally {
+      setIsLoading(false);
     }
-    toast({
-      title: "キャンセル完了",
-      description: "注文をキャンセルしました",
-    });
-    router.refresh();
   };
 
   /** 注文を受け取る */
   const handleReceive = async (orderId: string) => {
-    const { error } = await receiveOrder(orderId);
-    if (error) {
+    setIsLoading(true);
+    try {
+      const { error } = await receiveOrder(orderId);
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "受け取り確認エラー",
+          description: error,
+        });
+        return;
+      }
       toast({
-        variant: "destructive",
-        title: "受け取り確認エラー",
-        description: error,
+        title: "受け取り確認完了",
+        description: "注文の受け取りを確認しました",
       });
-      return;
+      router.refresh();
+    } finally {
+      setIsLoading(false);
     }
-    toast({
-      title: "受け取り確認完了",
-      description: "注文の受け取りを確認しました",
-    });
-    router.refresh();
   };
 
   return (
@@ -161,11 +178,15 @@ export const OrdersPage: FC<Props> = ({ products, student, orders }) => {
                       title: "注文完了",
                       description: "注文が完了しました",
                     });
+                    // ローディング状態をONに
+                    setIsLoading(true);
                     router.refresh();
                     // 注文完了後に注文履歴を表示
                     setShowOrderForm(false);
                   }}
                 />
+              ) : isLoading ? (
+                <OrderHistorySkeleton />
               ) : (
                 <OrderHistory
                   orders={orderHistoryItems}

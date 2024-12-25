@@ -29,6 +29,8 @@ type Props = {
   deliveryDate: Date;
   /** 注文する商品情報 */
   items: OrderItem[];
+  /** 注文処理中かどうか */
+  isCreatingOrder: boolean;
 };
 
 /** 注文確認ダイアログ */
@@ -38,6 +40,7 @@ export const OrderConfirmDialog: FC<Props> = ({
   onConfirm,
   deliveryDate,
   items,
+  isCreatingOrder,
 }) => {
   const totalAmount = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -97,15 +100,27 @@ export const OrderConfirmDialog: FC<Props> = ({
         </ScrollArea>
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose}>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={isCreatingOrder}
+          >
             キャンセル
           </Button>
           <Button
             variant="default"
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 min-w-[120px]"
             onClick={onConfirm}
+            disabled={isCreatingOrder}
           >
-            注文を確定する
+            {isCreatingOrder ? (
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span>注文中...</span>
+              </div>
+            ) : (
+              "注文を確定する"
+            )}
           </Button>
         </div>
       </DialogContent>

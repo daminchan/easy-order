@@ -126,8 +126,8 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
     if (!selectedDeliveryDate) {
       toast({
         variant: "destructive",
-        title: "配達日が選択されていません",
-        description: "配達日を選択してください",
+        title: "配達日が未設定です",
+        description: "配達日を設定してから注文してください",
       });
       return;
     }
@@ -175,7 +175,7 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
     }
   };
 
-  /** お気に入り商品の取得 */
+  /** お気に入り商品��取得 */
   useEffect(() => {
     const loadFavorites = async () => {
       const { productIds } = await getFavorites(studentId);
@@ -269,6 +269,7 @@ export const OrderForm: FC<Props> = ({ products, onSubmit, studentId }) => {
           onClose={() => setIsConfirmDialogOpen(false)}
           onConfirm={handleConfirmOrder}
           deliveryDate={selectedDeliveryDate}
+          isCreatingOrder={isCreatingOrder}
           items={Object.entries(quantities).map(([productId, quantity]) => {
             const product = products.find((p) => p.id === productId);
             return {
