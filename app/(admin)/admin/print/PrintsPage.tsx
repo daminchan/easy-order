@@ -178,77 +178,81 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
       )}
 
       {/* 注文テーブル */}
-      <Card className="print:shadow-none">
-        <CardHeader className="print:pb-2">
-          <CardTitle>
-            {format(selectedDate, "M月d日(E)", { locale: ja })}の注文一覧
-            {selectedGrade && ` - ${selectedGrade}年生`}
+      <div className="print:m-8">
+        <h1 className="text-xl font-bold mb-4">
+          {format(selectedDate, "M月d日(E)", { locale: ja })}の注文一覧
+          {selectedGrade && ` - ${selectedGrade}年生`}
+          {processedOrders.categories.length > 0 &&
+            ` - ${processedOrders.categories[currentCategoryIndex]}`}
+        </h1>
+
+        <Table>
+          <TableHeader>
+            <TableRow className="print:border-black [&>th]:py-4">
+              <TableHead className="w-[150px] print:border-black">
+                クラス
+              </TableHead>
+              <TableHead className="print:border-black">氏名</TableHead>
+              <TableHead className="w-[100px] text-center print:border-black">
+                数量
+              </TableHead>
+              <TableHead className="w-[200px] print:border-black">
+                備考
+              </TableHead>
+              <TableHead className="w-[100px] text-center print:border-black">
+                受け取り
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {processedOrders.categories.length > 0 &&
-              ` - ${processedOrders.categories[currentCategoryIndex]}`}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="print:border-black">
-                <TableHead className="print:border-black">クラス</TableHead>
-                <TableHead className="print:border-black">氏名</TableHead>
-                <TableHead className="print:border-black text-center">
-                  数量
-                </TableHead>
-                <TableHead className="print:border-black">備考</TableHead>
-                <TableHead className="print:border-black text-right">
-                  受け取り
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {processedOrders.categories.length > 0 &&
-                processedOrders.ordersByCategory[
-                  processedOrders.categories[currentCategoryIndex]
-                ]?.map((order) => (
-                  <TableRow key={order.id} className="print:border-black">
-                    <TableCell className="print:border-black">
-                      {order.student.className}
-                    </TableCell>
-                    <TableCell className="print:border-black">
-                      {order.student.name}
-                    </TableCell>
-                    <TableCell className="print:border-black text-center">
-                      {order.quantity}
-                    </TableCell>
-                    <TableCell className="print:border-black">
-                      {order.otherOrders}
-                    </TableCell>
-                    <TableCell className="print:border-black text-right">
-                      <Checkbox
-                        checked={order.isReceived}
-                        className="print:border-black"
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              processedOrders.ordersByCategory[
+                processedOrders.categories[currentCategoryIndex]
+              ]?.map((order) => (
+                <TableRow
+                  key={order.id}
+                  className="print:border-black [&>td]:py-4"
+                >
+                  <TableCell className="print:border-black">
+                    {order.student.className}
+                  </TableCell>
+                  <TableCell className="print:border-black">
+                    {order.student.name}
+                  </TableCell>
+                  <TableCell className="print:border-black text-center">
+                    {order.quantity}
+                  </TableCell>
+                  <TableCell className="print:border-black">
+                    {order.otherOrders}
+                  </TableCell>
+                  <TableCell className="print:border-black text-center">
+                    <div className="h-5 w-5 border border-black mx-auto" />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* 印刷用スタイル */}
       <style jsx global>{`
         @media print {
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 0;
           }
           body {
-            font-size: 12px;
+            font-size: 14px;
           }
           th,
           td {
-            padding: 8px !important;
+            padding: 12px !important;
           }
           .print\\:border-black {
             border-color: #000 !important;
+          }
+          .print\\:m-8 {
+            margin: 2rem !important;
           }
         }
       `}</style>
