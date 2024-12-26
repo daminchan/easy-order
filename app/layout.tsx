@@ -13,6 +13,7 @@ import { Providers } from "./providers";
 
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Header } from "@/components/ui/header/header";
 
 export const metadata: Metadata = {
   title: "EazyOrder",
@@ -30,14 +31,15 @@ const RootLayout = ({ children }: Props) => {
       <html lang="ja" className={GeistSans.className}>
         <body className="min-h-screen flex flex-col">
           <Providers>
-            <header className="p-4 flex justify-end">
+            {/* <header className="p-4 flex justify-end">
               <SignedOut>
                 <SignInButton />
               </SignedOut>
               <SignedIn>
                 <UserButton />
               </SignedIn>
-            </header>
+            </header> */}
+            <Header />
             <main className="flex-grow">{children}</main>
             <Footer />
             <Toaster />
