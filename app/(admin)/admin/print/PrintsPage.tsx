@@ -26,7 +26,14 @@ import { Badge } from "@/components/ui/badge";
 import { format, addDays, startOfDay } from "date-fns";
 import { ja } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Printer } from "lucide-react";
+import { ChevronLeft, ChevronRight, Printer, HelpCircle } from "lucide-react";
+import { OrderListTitle } from "./_components/OrderListTitle";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Props = {
   /** 注文データ */
@@ -139,9 +146,29 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
           ))}
         </div>
 
-        <Button variant="outline" size="icon" onClick={handlePrint}>
-          <Printer className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={handlePrint}>
+            <Printer className="h-4 w-4" />
+          </Button>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <HelpCircle className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>印刷時のヘッダー・フッターを非表示にするには：</p>
+                <ol className="list-decimal list-inside text-sm mt-2">
+                  <li>印刷プレビューで「その他の設定」を開く</li>
+                  <li>「ヘッダーとフッター」のチェックを外す</li>
+                  <li>必要に応じて「余白」を「なし」に設定</li>
+                </ol>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
 
       {/* カテゴリーページネーション */}
@@ -179,27 +206,31 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
 
       {/* 注文テーブル */}
       <div className="print:m-8">
-        <h1 className="text-xl font-bold mb-4">
-          {format(selectedDate, "M月d日(E)", { locale: ja })}の注文一覧
-          {selectedGrade && ` - ${selectedGrade}年生`}
-          {processedOrders.categories.length > 0 &&
-            ` - ${processedOrders.categories[currentCategoryIndex]}`}
-        </h1>
+        <OrderListTitle
+          date={selectedDate}
+          grade={selectedGrade}
+          category={processedOrders.categories[currentCategoryIndex]}
+        />
 
         <Table>
           <TableHeader>
             <TableRow className="print:border-black [&>th]:py-4">
-              <TableHead className="w-[150px] print:border-black">
+              <TableHead className="w-[100px] print:border-black">
                 クラス
               </TableHead>
-              <TableHead className="print:border-black">氏名</TableHead>
-              <TableHead className="w-[100px] text-center print:border-black">
+              <TableHead className="w-[200px] print:border-black">
+                氏名
+              </TableHead>
+              <TableHead className="w-[150px] print:border-black">
+                弁当名
+              </TableHead>
+              <TableHead className="w-[80px] text-center print:border-black">
                 数量
               </TableHead>
               <TableHead className="w-[200px] print:border-black">
                 備考
               </TableHead>
-              <TableHead className="w-[100px] text-center print:border-black">
+              <TableHead className="w-[80px] text-center print:border-black">
                 受け取り
               </TableHead>
             </TableRow>
@@ -218,6 +249,9 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
                   </TableCell>
                   <TableCell className="print:border-black">
                     {order.student.name}
+                  </TableCell>
+                  <TableCell className="print:border-black">
+                    {processedOrders.categories[currentCategoryIndex]}
                   </TableCell>
                   <TableCell className="print:border-black text-center">
                     {order.quantity}
@@ -240,9 +274,18 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
           @page {
             size: A4;
             margin: 0;
+            /* ヘッダーとフッターを非表示にする */
+            marks: none;
+          }
+          /* Chrome/Firefoxのヘッダー・フッター非表示 */
+          html {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
           body {
             font-size: 14px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
           th,
           td {

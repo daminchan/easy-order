@@ -39,9 +39,13 @@ const RootLayout = ({ children }: Props) => {
                 <UserButton />
               </SignedIn>
             </header> */}
-            <Header />
+            <div className="print:hidden">
+              <Header />
+            </div>
             <main className="flex-grow">{children}</main>
-            <Footer />
+            <div className="print:hidden">
+              <Footer />
+            </div>
             <Toaster />
           </Providers>
         </body>
