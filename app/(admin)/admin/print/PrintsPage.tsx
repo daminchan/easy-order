@@ -13,8 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Select,
   SelectContent,
@@ -42,15 +41,23 @@ type Props = {
 
 /** 印刷ページ */
 export const PrintsPage: FC<Props> = ({ orders }) => {
-  // 利用可能な日付の生成（今日から7日分）
+  // 利用可能な日付の生成（予約された日付から取得）
   const availableDates = useMemo(() => {
-    return Array.from({ length: 7 }, (_, i) =>
-      addDays(startOfDay(new Date()), i)
-    );
-  }, []);
+    const dates = orders.map((order) => order.deliveryDate);
+    const uniqueDates = Array.from(
+      new Set(dates.map((date) => format(date, "yyyy-MM-dd")))
+    ).map((dateStr) => new Date(dateStr));
 
-  // 選択された日付
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    return uniqueDates.sort((a, b) => a.getTime() - b.getTime());
+  }, [orders]);
+
+  // 選択された日付（最も近い日付を初期値に）
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (availableDates.length > 0) {
+      return availableDates[0];
+    }
+    return new Date();
+  });
 
   // 選択された学年
   const [selectedGrade, setSelectedGrade] = useState<number | null>(null);
@@ -72,17 +79,21 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
       ? filteredOrders.filter((order) => order.grade === selectedGrade)
       : filteredOrders;
 
+    // 商品カテゴリーごとにグループ化
+    const categorized = gradeFiltered.reduce((acc, order) => {
+      if (!acc[order.productName]) {
+        acc[order.productName] = {
+          grade: order.grade,
+          orders: [],
+        };
+      }
+      acc[order.productName].orders.push(...order.orders);
+      return acc;
+    }, {} as Record<string, { grade: number; orders: AdminOrderItem[] }>);
+
     return {
-      categories: Array.from(
-        new Set(gradeFiltered.map((order) => order.productName))
-      ),
-      ordersByCategory: gradeFiltered.reduce((acc, order) => {
-        if (!acc[order.productName]) {
-          acc[order.productName] = [];
-        }
-        acc[order.productName].push(...order.orders);
-        return acc;
-      }, {} as Record<string, AdminOrderItem[]>),
+      categories: Object.keys(categorized),
+      ordersByCategory: categorized,
     };
   }, [orders, selectedDate, selectedGrade]);
 
@@ -215,9 +226,6 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
         <Table>
           <TableHeader>
             <TableRow className="print:border-black [&>th]:py-4">
-              <TableHead className="w-[100px] print:border-black">
-                クラス
-              </TableHead>
               <TableHead className="w-[200px] print:border-black">
                 氏名
               </TableHead>
@@ -239,14 +247,11 @@ export const PrintsPage: FC<Props> = ({ orders }) => {
             {processedOrders.categories.length > 0 &&
               processedOrders.ordersByCategory[
                 processedOrders.categories[currentCategoryIndex]
-              ]?.map((order) => (
+              ]?.orders.map((order) => (
                 <TableRow
                   key={order.id}
                   className="print:border-black [&>td]:py-4"
                 >
-                  <TableCell className="print:border-black">
-                    {order.student.className}
-                  </TableCell>
                   <TableCell className="print:border-black">
                     {order.student.name}
                   </TableCell>
